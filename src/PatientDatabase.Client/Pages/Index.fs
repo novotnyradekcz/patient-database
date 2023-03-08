@@ -326,24 +326,6 @@ let IndexView () =
                                 ]
                             ]
                         ]
-                        // Daisy.label [ Daisy.labelText "Vaccinations" ]
-                        // Daisy.card [
-                        //     prop.className "p-6 bg-base-300"
-                        //     prop.children [
-                        //         Daisy.formControl [
-                        //             Daisy.label [ Daisy.labelText "Vaccine" ]
-                        //             Daisy.input [
-                        //                 input.bordered
-                        //                 prop.placeholder "measles"
-                        //             ]
-                        //             Daisy.label [ Daisy.labelText "Date" ]
-                        //             Daisy.input [
-                        //                 input.bordered
-                        //                 prop.placeholder "23/03/2023"
-                        //             ]
-                        //         ]
-                        //     ]
-                        // ]
                         Daisy.button.button [
                             prop.className "btn-wide shadow-2xl m-2"
                             button.outline
