@@ -26,13 +26,14 @@ let AppView () =
         Html.div [
             prop.className "text-2xl"
             prop.children [
-                Html.a ("Data Entry", Page.Index); Html.span " | "; Html.a ("Patient List", Page.PatientList); Html.span " | "; Html.a ("About", Page.About)
+                Html.a ("Data Entry", Page.Index); Html.span " | "; Html.a ("Data Upload", Page.DataUpload); Html.span " | "; Html.a ("Patient List", Page.PatientList); Html.span " | "; Html.a ("About", Page.About)
             ]
         ]
 
     let render =
         match state.Page with
         | Page.Index -> Pages.Index.IndexView()
+        | Page.DataUpload -> Pages.DataUpload.IndexView()
         | Page.PatientList -> Pages.PatientList.IndexView()
         | Page.About -> Html.text "Based on SAFEr Template by Dzoukr"
 

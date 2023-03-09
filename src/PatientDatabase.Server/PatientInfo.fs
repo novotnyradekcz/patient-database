@@ -9,6 +9,7 @@ open Microsoft.AspNetCore.Http.Features
 open PatientDatabase.Shared.API
 open Microsoft.Data.SqlClient
 open FsToolkit.ErrorHandling
+open FSharp.Data
 
 module DataAccess =
 
@@ -61,6 +62,7 @@ module DataAccess =
         }
 
     let patientInfoTable = table'<PatientInfoRow> "patient_info" |> inSchema "dbo"
+
     let createPatientInfo (conn: IDbConnection) (info: PatientForm) =
         let infoRow = mapRow info
         insert {
@@ -157,10 +159,11 @@ module DataAccess =
             )
         )
 
-    let uploadPatientInfo (conn: IDbConnection) (data: PatientForm list) =
+    let uploadPatientInfo (conn: IDbConnection) (data: byte[]) =
+        
+
         let infoTable =
-            data
-            |> List.map mapRow
+            data |> List.map mapRow
         insert {
             into patientInfoTable
             values infoTable
@@ -183,7 +186,7 @@ module HttpHandlers =
             return items |> List.ofSeq
         }
 
-    let uploadPatientInfo (ctx: HttpContext) (data: PatientForm list) =
+    let uploadPatientInfo (ctx: HttpContext) (data: byte[]) =
         task {
             let conn = ctx.GetService<SqlConnection>()
             let! _ = DataAccess.uploadPatientInfo conn data

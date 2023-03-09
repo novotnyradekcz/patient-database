@@ -40,6 +40,6 @@ type Service =
     { GetMessage: bool -> Async<string>
       SaveForm: PatientForm -> Async<unit>
       ShowList: string * string -> Async<PatientListItem list>
-      UploadData: Byte[] -> Async<PatientForm> }
+      UploadData: Byte[] -> Async<unit> }
 
     static member RouteBuilder _ m = sprintf "/api/service/%s" m

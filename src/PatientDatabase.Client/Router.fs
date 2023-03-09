@@ -8,6 +8,7 @@ type Page =
     | Index
     | About
     | PatientList
+    | DataUpload
 
 [<RequireQualifiedAccess>]
 module Page =
@@ -17,6 +18,7 @@ module Page =
         function
         | [ "about" ] -> Page.About
         | [ "patientlist" ] -> Page.PatientList
+        | [ "dataupload" ] -> Page.DataUpload
         | [] -> Page.Index
         | _ -> defaultPage
 
@@ -27,6 +29,7 @@ module Page =
         | Page.Index -> [] |> noQueryString
         | Page.About -> [ "about" ] |> noQueryString
         | Page.PatientList -> [ "patientlist" ] |> noQueryString
+        | Page.DataUpload -> [ "dataupload" ] |> noQueryString
 
 [<RequireQualifiedAccess>]
 module Router =

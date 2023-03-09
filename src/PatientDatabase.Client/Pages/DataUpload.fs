@@ -61,4 +61,33 @@ let private update (msg: Msg) (model: State) : State * Cmd<Msg> =
     | FileUploaded ->
          match model.InputFile with
          | None -> model, Cmd.none
-         | Some file -> model, Cmd.OfAsync.perform upload file FormChanged
+         | Some file -> model, Cmd.OfAsync.perform upload file FormSaved
+
+[<ReactComponent>]
+let IndexView () =
+    let state, dispatch = React.useElmish (init, update, [||])
+
+
+    Html.div [
+        Html.form [
+            prop.onSubmit (fun e ->
+                e.preventDefault ()
+                FileUploaded |> dispatch)
+            prop.className "flex flex-col items-center"
+            prop.children [
+                Daisy.formControl [
+                    Daisy.label [Daisy.labelText "Upload data from file"]
+                    Daisy.file [
+                        file.bordered
+                        prop.onChange (fun value -> value |> FileChosen |> dispatch)
+                    ]
+                ]
+                Daisy.button.button [
+                    prop.className "btn-wide shadow-2xl m-2"
+                    button.outline
+                    prop.text "Upload Data"
+                    prop.type'.submit
+                ]
+            ]
+        ]
+    ]
