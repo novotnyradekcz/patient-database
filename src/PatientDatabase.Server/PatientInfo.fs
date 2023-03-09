@@ -160,10 +160,35 @@ module DataAccess =
         )
 
     let uploadPatientInfo (conn: IDbConnection) (data: byte[]) =
-        
+        let stringData: string = System.Text.Encoding.ASCII.GetString(data)
+        let stringRows: string[][] = stringData.Split('\n') |> Array.map (fun (row: string) -> row.Split(','))
+        let patientFormData: PatientForm list = [
+            for row in stringRows[1..stringRows.Length - 2] ->
+                {
+                Place = row[0];
+                Date = row[1];
+                Name = row[2];
+                Age = row[3];
+                Sex = row[4];
+                Symptom1 = row[5];
+                Symptom2 = row[6];
+                Symptom3 = row[7];
+                Tests = row[8];
+                Test1 = row[9];
+                Test2 = row[10];
+                Test3 = row[11];
+                Result1 = row[12];
+                Result2 = row[13];
+                Result3 = row[14];
+                Diagnosis1 = row[15];
+                Diagnosis2 = row[16];
+                Diagnosis3 = row[17];
+                Treatment = row[18];
+                }
+        ]
 
         let infoTable =
-            data |> List.map mapRow
+            patientFormData |> List.map mapRow
         insert {
             into patientInfoTable
             values infoTable
