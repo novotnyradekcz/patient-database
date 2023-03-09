@@ -1,5 +1,7 @@
 ﻿module PatientDatabase.Client.Pages.Index
 
+open Browser.Types
+open Fable.Remoting.Client
 open Feliz
 open Feliz.DaisyUI
 open Elmish
@@ -8,7 +10,7 @@ open PatientDatabase.Client.Server
 open PatientDatabase.Shared.API
 open System
 
-type private State = { Message: string; Form: PatientForm }
+type private State = { Message: string; Form: PatientForm; InputFile: File option }
 
 type private Msg =
     | AskForMessage of bool
@@ -16,6 +18,8 @@ type private Msg =
     | FormChanged of PatientForm
     | FormSubmitted
     | FormSaved of unit
+    | FileChosen of File
+    | FileUploaded
 
 let private init () =
     {
@@ -41,6 +45,7 @@ let private init () =
             Diagnosis3 = ""
             Treatment = "ibuprofen"
         }
+        InputFile = None
     },
     Cmd.none
 
@@ -67,11 +72,25 @@ let IndexView () =
 
 
     Html.div [
-        Html.div [
-            Daisy.button.button [
-                prop.className "btn-wide shadow-2xl m-2"
-                button.outline
-                prop.text "Import Data from File"
+        Html.form [
+            prop.onSubmit (fun e ->
+                e.preventDefault ()
+                FileUploaded |> dispatch)
+            prop.className "flex flex-col items-center"
+            prop.children [
+                Daisy.formControl [
+                    Daisy.label [Daisy.labelText "Upload data from file"]
+                    Daisy.file [
+                        file.bordered
+                        prop.onChange (fun value -> value |> FileChosen |> dispatch)
+                    ]
+                ]
+                Daisy.button.button [
+                    prop.className "btn-wide shadow-2xl m-2"
+                    button.outline
+                    prop.text "Upload Data"
+                    prop.type'.submit
+                ]
             ]
         ]
         Html.form [

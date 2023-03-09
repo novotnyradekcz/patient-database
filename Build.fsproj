@@ -9,6 +9,7 @@
     <Compile Include="Build.fs" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="CsvHelper" Version="30.0.1" />
     <PackageReference Include="Feliz.CompilerPlugins" Version="2.0.0" />
   </ItemGroup>
   <Import Project=".paket\Paket.Restore.targets" />

@@ -4,8 +4,8 @@
         <TargetFramework>net7.0</TargetFramework>
     </PropertyGroup>
     <ItemGroup>
-        <Compile Include="Errors.fs"/>
-        <Compile Include="API.fs"/>
+        <Compile Include="Errors.fs" />
+        <Compile Include="API.fs" />
     </ItemGroup>
-    <Import Project="..\..\.paket\Paket.Restore.targets"/>
+    <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

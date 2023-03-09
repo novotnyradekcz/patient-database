@@ -37,9 +37,7 @@ module DataAccess =
         Treatment: string
     }
 
-    let patientInfoTable = table'<PatientInfoRow> "patient_info" |> inSchema "dbo"
-    let createPatientInfo (conn: IDbConnection) (info: PatientForm) =
-        let infoRow = {
+    let mapRow (info: PatientForm) = {
             Id = Guid.NewGuid()
             Place = info.Place
             Date = DateTime.Parse(info.Date)
@@ -61,6 +59,10 @@ module DataAccess =
             Diagnosis3 = info.Diagnosis3
             Treatment = info.Treatment
         }
+
+    let patientInfoTable = table'<PatientInfoRow> "patient_info" |> inSchema "dbo"
+    let createPatientInfo (conn: IDbConnection) (info: PatientForm) =
+        let infoRow = mapRow info
         insert {
             into patientInfoTable
             value infoRow
@@ -155,6 +157,17 @@ module DataAccess =
             )
         )
 
+    let uploadPatientInfo (conn: IDbConnection) (data: PatientForm list) =
+        let infoTable =
+            data
+            |> List.map mapRow
+        insert {
+            into patientInfoTable
+            values infoTable
+        }
+        |> conn.InsertAsync
+
+
 module HttpHandlers =
     let createPatientInfo (ctx: HttpContext) (form: PatientForm) =
         task {
@@ -168,4 +181,11 @@ module HttpHandlers =
             let conn = ctx.GetService<SqlConnection>()
             let! items = DataAccess.showPatientInfo conn phrase field
             return items |> List.ofSeq
+        }
+
+    let uploadPatientInfo (ctx: HttpContext) (data: PatientForm list) =
+        task {
+            let conn = ctx.GetService<SqlConnection>()
+            let! _ = DataAccess.uploadPatientInfo conn data
+            return()
         }
