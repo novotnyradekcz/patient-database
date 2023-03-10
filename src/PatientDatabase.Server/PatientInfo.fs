@@ -38,12 +38,23 @@ module DataAccess =
         Treatment: string
     }
 
-    let mapRow (info: PatientForm) = {
+    let mapRow (info: PatientForm) =
+        let res, date = DateTime.TryParse(info.Date)
+        let resDate =
+            match res with
+            | false -> DateTime.Today
+            | true -> date
+        let age =
+            try
+                int info.Age
+            with
+                | _ -> 0
+        {
             Id = Guid.NewGuid()
             Place = info.Place
-            Date = DateTime.Parse(info.Date)
+            Date = resDate
             Name = info.Name
-            Age = int info.Age
+            Age = age
             Sex = info.Sex
             Symptom1 = info.Symptom1
             Symptom2 = info.Symptom2

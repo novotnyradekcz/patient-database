@@ -9,8 +9,9 @@ open Feliz.UseElmish
 open PatientDatabase.Client.Pages.Index
 open PatientDatabase.Client.Server
 open PatientDatabase.Shared.API
+open Fable.Remoting.Client
 
-type private State = { Patients: PatientListItem list; SearchPhrase: string; SearchField: string }
+type private State = { Patients: PatientListItem list; SearchPhrase: string; SearchField: string; FileName: string }
 
 type private Msg =
     | ShowList
@@ -18,11 +19,22 @@ type private Msg =
     | SearchPhraseChanged of string
     | SearchPhraseSubmitted
     | ListShown of PatientListItem list
+    | ExportList
+    | ListDownloaded of unit
 
 let private init () =
     { Patients = List.empty
       SearchPhrase = ""
-      SearchField = "Name" }, Cmd.ofMsg ShowList
+      SearchField = "Name"
+      FileName = "/home/novotny/Documents/export.csv" }, Cmd.ofMsg ShowList
+
+// TODO: maybe rewrite the function below as not async?
+let download (patients: PatientListItem list) (fileName: string) = async {
+    let recordToString (p: PatientListItem) =
+        p.Place + "," + p.Date + "," + p.Name + "," + string p.Age + "," + p.Sex + "," + p.Symptoms + "," + p.Tests + "," + p.Diagnoses + "," + p.Treatment
+    let downloadedFile = patients |> List.map recordToString |> List.fold (fun acc x -> acc + "\n" + x) "" |> System.Text.Encoding.ASCII.GetBytes
+    downloadedFile.SaveFileAs(fileName)
+}
 
 let private update (msg: Msg) (model: State) : State * Cmd<Msg> =
     match msg with
@@ -31,10 +43,12 @@ let private update (msg: Msg) (model: State) : State * Cmd<Msg> =
     | SearchPhraseChanged phrase -> { model with SearchPhrase = phrase }, Cmd.none
     | SearchPhraseSubmitted -> model, Cmd.ofMsg ShowList
     | ListShown items -> { model with Patients = items }, Cmd.none
+    | ExportList -> model, Cmd.OfAsync.perform download model.Patients model.FileName ListDownloaded
+    | ListDownloaded _ -> model, Cmd.none
 
 let PatientRow patient =
     Html.tr [
-        prop.className "cursor-text"
+        table.hover
         prop.children [
             Html.td patient.Name
             Html.td patient.Age
