@@ -214,6 +214,6 @@ module HttpHandlers =
     let uploadPatientInfo (ctx: HttpContext) (data: byte[]) =
         task {
             let conn = ctx.GetService<SqlConnection>()
-            let! _ = DataAccess.uploadPatientInfo conn data
-            return()
+            let! rows = DataAccess.uploadPatientInfo conn data
+            return rows
         }

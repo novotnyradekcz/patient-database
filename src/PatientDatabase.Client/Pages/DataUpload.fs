@@ -10,15 +10,16 @@ open PatientDatabase.Client.Server
 open PatientDatabase.Shared.API
 open System
 
-type private State = { InputFile: File option }
+type private State = { Message: string; InputFile: File option }
 
 type private Msg =
-    | FileSaved of unit
+    | FileSaved of int
     | FileChosen of File
     | FileUploaded
 
 let private init () =
     {
+        Message = "Waiting for upload"
         InputFile = None
     },
     Cmd.none
@@ -31,11 +32,11 @@ let upload (file: File) = async {
 
 let private update (msg: Msg) (model: State) : State * Cmd<Msg> =
     match msg with
-    | FileSaved _ -> model, Cmd.none
+    | FileSaved rows -> { model with Message = $"Uploaded {rows} patient entries" }, Cmd.none
     | FileChosen file -> { model with InputFile = Some file }, Cmd.none
     | FileUploaded ->
          match model.InputFile with
-         | None -> model, Cmd.none
+         | None -> { model with Message = "No file uploaded" }, Cmd.none
          | Some file -> model, Cmd.OfAsync.perform upload file FileSaved
 
 [<ReactComponent>]
@@ -68,6 +69,18 @@ let IndexView () =
                                 prop.text "Upload Data"
                                 prop.type'.submit
                             ]
+                            match state.Message with
+                            | str when str.Contains("patient entries") ->
+                                Daisy.alert [
+                                    alert.success
+                                    prop.text state.Message
+                                ]
+                            | "No file uploaded" ->
+                                Daisy.alert [
+                                    alert.error
+                                    prop.text state.Message
+                                ]
+                            | _ -> Html.div []
                         ]
                     ]
                 ]
