@@ -18,6 +18,7 @@ NUGET
       System.Security.Cryptography.ProtectedData (>= 4.7)
       System.Text.Json (>= 4.7.2)
       System.Threading.Tasks.Extensions (>= 4.5.4)
+    CsvHelper (30.0.1)
     Dapper (2.0.123)
     Dapper.FSharp (4.4)
       Dapper (>= 2.0.123)

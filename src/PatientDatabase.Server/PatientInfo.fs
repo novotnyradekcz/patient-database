@@ -11,6 +11,7 @@ open Microsoft.Data.SqlClient
 open FsToolkit.ErrorHandling
 open FSharp.Data
 open Microsoft.CSharp
+open CsvHelper
 
 module DataAccess =
 
