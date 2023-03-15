@@ -2,6 +2,8 @@ module PatientDatabase.Server.PatientInfo
 
 
 open System
+open System.IO
+open System.Globalization
 open System.Data
 open System.Data.Common
 open Microsoft.AspNetCore.Http
@@ -72,6 +74,29 @@ module DataAccess =
             Diagnosis2 = info.Diagnosis2
             Diagnosis3 = info.Diagnosis3
             Treatment = info.Treatment
+        }
+
+    let rowMap (data: PatientListItem) =
+        {
+            Place = data.Place
+            Date = data.Date.ToShortDateString()
+            Name = data.Name
+            Age = string data.Age
+            Sex = data.Sex
+            Symptom1 = data.Symptom1
+            Symptom2 = data.Symptom2
+            Symptom3 = data.Symptom3
+            Tests = data.Tests
+            Test1 = ""
+            Test2 = ""
+            Test3 = ""
+            Result1 = ""
+            Result2 = ""
+            Result3 = ""
+            Diagnosis1 = data.Diagnosis1
+            Diagnosis2 = data.Diagnosis2
+            Diagnosis3 = data.Diagnosis3
+            Treatment = data.Treatment
         }
 
     let patientInfoTable = table'<PatientInfoRow> "patient_info" |> inSchema "dbo"
@@ -178,32 +203,9 @@ module DataAccess =
 
     let uploadPatientInfo (conn: IDbConnection) (data: byte[]) =
         let stringData: string = System.Text.Encoding.ASCII.GetString(data)
-        let stringRows: string[][] = stringData.Split('\n') |> Array.map (fun (row: string) -> row.Split(','))
-        let patientFormData: PatientForm list = [
-            for row in stringRows[1..stringRows.Length - 2] ->
-                {
-                Place = row[0];
-                Date = row[1];
-                Name = row[2];
-                Age = row[3];
-                Sex = row[4];
-                Symptom1 = row[5];
-                Symptom2 = row[6];
-                Symptom3 = row[7];
-                Tests = row[8];
-                Test1 = row[9];
-                Test2 = row[10];
-                Test3 = row[11];
-                Result1 = row[12];
-                Result2 = row[13];
-                Result3 = row[14];
-                Diagnosis1 = row[15];
-                Diagnosis2 = row[16];
-                Diagnosis3 = row[17];
-                Treatment = row[18];
-                }
-        ]
-
+        use reader = new StringReader(stringData)
+        use csv = new CsvReader(reader, CultureInfo.InvariantCulture)
+        let patientFormData = List.ofSeq (csv.GetRecords<PatientForm>())
         let infoTable =
             patientFormData |> List.map mapRow
         insert {
@@ -215,10 +217,13 @@ module DataAccess =
     let downloadPatientInfo (conn: IDbConnection) (phrase: string) (field: string) =
         task {
             let! data = showPatientInfo conn phrase field
-            let rowToString (row: PatientListItem) =
-                row.Place + "," + row.Date.ToShortDateString() + "," + row.Name + "," + string row.Age + "," + row.Sex + "," + row.Symptom1 + "," + row.Symptom2 + "," + row.Symptom3 + "," + row.Tests + "," + row.Diagnosis1 + "," + row.Diagnosis2 + "," + row.Diagnosis3 + "," + row.Treatment
-            let downloadedFile = System.Text.Encoding.ASCII.GetBytes(data |> List.map rowToString |> List.fold (fun acc x -> acc + "\r\n" + x) "Place,Date,Name,Age,Sex,Symptom1,Symptom2,Symptom3,Tests,Diagnosis1,Diagnosis2,Diagnosis3,Treatment")
-            return downloadedFile
+            let outputData =
+                data |> List.map rowMap
+            use writer = new StringWriter()
+            use csv = new CsvWriter(writer, CultureInfo.InvariantCulture)
+            csv.WriteRecords(outputData)
+            let downloadedFile = writer.ToString()
+            return System.Text.Encoding.ASCII.GetBytes(downloadedFile)
         }
 
 
