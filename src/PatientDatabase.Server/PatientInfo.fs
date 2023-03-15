@@ -10,6 +10,7 @@ open PatientDatabase.Shared.API
 open Microsoft.Data.SqlClient
 open FsToolkit.ErrorHandling
 open FSharp.Data
+open Microsoft.CSharp
 
 module DataAccess =
 
@@ -157,17 +158,21 @@ module DataAccess =
                     {
                         Id = item.Id
                         Place = item.Place
-                        Date = item.Date.ToLongDateString()
+                        Date = item.Date
                         Name = item.Name
                         Age = item.Age
                         Sex = item.Sex
-                        Symptoms = item.Symptom1 + " " + item.Symptom2 + " " + item.Symptom3
+                        Symptom1 = item.Symptom1
+                        Symptom2 = item.Symptom2
+                        Symptom3 = item.Symptom3
                         Tests = item.Tests
-                        Diagnoses = item.Diagnosis1 + " " + item.Diagnosis2 + " " + item.Diagnosis3
+                        Diagnosis1 = item.Diagnosis1
+                        Diagnosis2 = item.Diagnosis2
+                        Diagnosis3 = item.Diagnosis3
                         Treatment = item.Treatment
                     }: PatientListItem
                 )
-            )
+            ) |> Seq.toList
         )
 
     let uploadPatientInfo (conn: IDbConnection) (data: byte[]) =
@@ -206,6 +211,15 @@ module DataAccess =
         }
         |> conn.InsertAsync
 
+    let downloadPatientInfo (conn: IDbConnection) (phrase: string) (field: string) =
+        task {
+            let! data = showPatientInfo conn phrase field
+            let rowToString (row: PatientListItem) =
+                row.Place + "," + row.Date.ToShortDateString() + "," + row.Name + "," + string row.Age + "," + row.Sex + "," + row.Symptom1 + "," + row.Symptom2 + "," + row.Symptom3 + "," + row.Tests + "," + row.Diagnosis1 + "," + row.Diagnosis2 + "," + row.Diagnosis3 + "," + row.Treatment
+            let downloadedFile = System.Text.Encoding.ASCII.GetBytes(data |> List.map rowToString |> List.fold (fun acc x -> acc + "\r\n" + x) "Place,Date,Name,Age,Sex,Symptom1,Symptom2,Symptom3,Tests,Diagnosis1,Diagnosis2,Diagnosis3,Treatment")
+            return downloadedFile
+        }
+
 
 module HttpHandlers =
     let createPatientInfo (ctx: HttpContext) (form: PatientForm) =
@@ -227,4 +241,11 @@ module HttpHandlers =
             let conn = ctx.GetService<SqlConnection>()
             let! rows = DataAccess.uploadPatientInfo conn data
             return rows
+        }
+
+    let downloadPatientInfo (ctx: HttpContext) (file: string, phrase: string) =
+        task {
+            let conn = ctx.GetService<SqlConnection>()
+            let! data = DataAccess.downloadPatientInfo conn file phrase
+            return data
         }

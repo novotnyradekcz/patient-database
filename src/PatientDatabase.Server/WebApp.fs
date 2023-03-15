@@ -22,6 +22,7 @@ let service ctx =
       SaveForm = HttpHandlers.createPatientInfo ctx >> Async.AwaitTask
       ShowList = HttpHandlers.showPatientInfo ctx >> Async.AwaitTask
       UploadData = HttpHandlers.uploadPatientInfo ctx >> Async.AwaitTask
+      DownloadData = HttpHandlers.downloadPatientInfo ctx >> Async.AwaitTask
     }
 
 let webApp: HttpHandler =

@@ -5,6 +5,7 @@ open Router
 open Elmish
 open SharedView
 open Feliz.UseElmish
+open Feliz.DaisyUI
 
 type private Msg = UrlChanged of Page
 
@@ -23,10 +24,19 @@ let AppView () =
     let state, dispatch = React.useElmish (init, update)
 
     let navigation =
-        Html.div [
-            prop.className "text-2xl"
+        Daisy.artboard [
             prop.children [
-                Html.a ("Data Entry", Page.Index); Html.span " | "; Html.a ("Data Upload", Page.DataUpload); Html.span " | "; Html.a ("Patient List", Page.PatientList); Html.span " | "; Html.a ("About", Page.About)
+                Daisy.menu [
+                    menu.horizontal
+
+                    prop.className "items-stretch shadow-lg bg-base-100 rounded-box m-2"
+                    prop.children [
+                        Html.li [Html.a ("Data Entry", Page.Index)]
+                        Html.li [Html.a ("Data Upload", Page.DataUpload)]
+                        Html.li [Html.a ("Patient List", Page.PatientList)]
+                        Html.li [Html.a ("About", Page.About)]
+                    ]
+                ]
             ]
         ]
 

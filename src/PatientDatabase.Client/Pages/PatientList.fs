@@ -2,6 +2,7 @@ module PatientDatabase.Client.Pages.PatientList
 
 open System
 
+open Browser.Types
 open Feliz
 open Feliz.DaisyUI
 open Elmish
@@ -26,13 +27,10 @@ let private init () =
     { Patients = List.empty
       SearchPhrase = ""
       SearchField = "Name"
-      FileName = "/home/novotny/Documents/export.csv" }, Cmd.ofMsg ShowList
+      FileName = "export.csv" }, Cmd.ofMsg ShowList
 
-// TODO: maybe rewrite the function below as not async?
-let download (patients: PatientListItem list) (fileName: string) = async {
-    let recordToString (p: PatientListItem) =
-        p.Place + "," + p.Date + "," + p.Name + "," + string p.Age + "," + p.Sex + "," + p.Symptoms + "," + p.Tests + "," + p.Diagnoses + "," + p.Treatment
-    let downloadedFile = patients |> List.map recordToString |> List.fold (fun acc x -> acc + "\n" + x) "" |> System.Text.Encoding.ASCII.GetBytes
+let download (fileName: string, searchPhrase: string, searchField: string) = async {
+    let! downloadedFile = service.DownloadData (searchPhrase, searchField)
     downloadedFile.SaveFileAs(fileName)
 }
 
@@ -43,7 +41,7 @@ let private update (msg: Msg) (model: State) : State * Cmd<Msg> =
     | SearchPhraseChanged phrase -> { model with SearchPhrase = phrase }, Cmd.none
     | SearchPhraseSubmitted -> model, Cmd.ofMsg ShowList
     | ListShown items -> { model with Patients = items }, Cmd.none
-    | ExportList -> model, Cmd.OfAsync.perform download model.Patients model.FileName ListDownloaded
+    | ExportList -> model, Cmd.OfAsync.perform download (model.FileName, model.SearchPhrase, model.SearchField) ListDownloaded
     | ListDownloaded _ -> model, Cmd.none
 
 let PatientRow patient =
@@ -53,11 +51,11 @@ let PatientRow patient =
             Html.td patient.Name
             Html.td patient.Age
             Html.td patient.Sex
-            Html.td patient.Symptoms
+            Html.td $"{patient.Symptom1} {patient.Symptom2} {patient.Symptom3}"
             Html.td patient.Tests
-            Html.td patient.Diagnoses
+            Html.td $"{patient.Diagnosis1} {patient.Diagnosis2} {patient.Diagnosis3}"
             Html.td patient.Treatment
-            Html.td patient.Date
+            Html.td (patient.Date.ToLongDateString())
             Html.td patient.Place
         ]
     ]
@@ -147,7 +145,7 @@ let IndexView () =
                         Html.form [
                             prop.onSubmit (fun e ->
                                 e.preventDefault ()
-                                SearchPhraseSubmitted |> dispatch)
+                                ExportList |> dispatch)
                             prop.className "bg-6 m-1"
                             prop.children [
                                 Daisy.card [
@@ -156,6 +154,7 @@ let IndexView () =
                                         Daisy.button.button [
                                             prop.className "m-1"
                                             prop.text "Export current view"
+                                            prop.type'.submit
                                         ]
                                     ]
                                 ]

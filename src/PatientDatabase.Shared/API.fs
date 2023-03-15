@@ -26,13 +26,17 @@ type PatientForm =
 type PatientListItem = {
     Id: Guid
     Place: string
-    Date: string
+    Date: DateTime
     Name: string
     Age: int
     Sex: string
-    Symptoms: string
+    Symptom1: string
+    Symptom2: string
+    Symptom3: string
     Tests: string
-    Diagnoses: string
+    Diagnosis1: string
+    Diagnosis2: string
+    Diagnosis3: string
     Treatment: string
 }
 
@@ -40,6 +44,7 @@ type Service =
     { GetMessage: bool -> Async<string>
       SaveForm: PatientForm -> Async<unit>
       ShowList: string * string -> Async<PatientListItem list>
-      UploadData: Byte[] -> Async<int> }
+      UploadData: byte[] -> Async<int>
+      DownloadData: string * string -> Async<byte[]> }
 
     static member RouteBuilder _ m = sprintf "/api/service/%s" m
