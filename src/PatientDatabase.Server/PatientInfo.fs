@@ -12,7 +12,6 @@ open PatientDatabase.Shared.API
 open Microsoft.Data.SqlClient
 open FsToolkit.ErrorHandling
 open FSharp.Data
-open Microsoft.CSharp
 open CsvHelper
 
 module DataAccess =
@@ -205,6 +204,7 @@ module DataAccess =
         let stringData: string = System.Text.Encoding.ASCII.GetString(data)
         use reader = new StringReader(stringData)
         use csv = new CsvReader(reader, CultureInfo.InvariantCulture)
+        csv.Configuration.PrepareHeaderForMatch <- ( fun header _ -> CultureInfo.CurrentCulture.TextInfo.ToTitleCase( header )) // only works in CsvHelper 17.0.0 and older it seems
         let patientFormData = List.ofSeq (csv.GetRecords<PatientForm>())
         let infoTable =
             patientFormData |> List.map mapRow
