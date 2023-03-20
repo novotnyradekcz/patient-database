@@ -8,6 +8,7 @@ type Page =
     | Index
     | About
     | PatientList
+    | EditPatient
     | DataUpload
 
 [<RequireQualifiedAccess>]
@@ -18,6 +19,7 @@ module Page =
         function
         | [ "about" ] -> Page.About
         | [ "patientlist" ] -> Page.PatientList
+        | [ "editpatient" ] -> Page.EditPatient
         | [ "dataupload" ] -> Page.DataUpload
         | [] -> Page.Index
         | _ -> defaultPage
@@ -29,6 +31,7 @@ module Page =
         | Page.Index -> [] |> noQueryString
         | Page.About -> [ "about" ] |> noQueryString
         | Page.PatientList -> [ "patientlist" ] |> noQueryString
+        | Page.EditPatient -> [ "editpatient" ] |> noQueryString
         | Page.DataUpload -> [ "dataupload" ] |> noQueryString
 
 [<RequireQualifiedAccess>]
