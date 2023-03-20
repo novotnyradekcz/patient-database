@@ -3,7 +3,7 @@
 open System
 open CsvHelper.Configuration.Attributes
 
-// attributes don't seem to help, solved by downgrading CsvHelper
+// attributes don't seem to help, solved by downgrading CsvHelper to version 17.0.0
 type PatientForm =
     { [<Name("Place")>] Place: string
       [<Name("Date")>] Date: string
