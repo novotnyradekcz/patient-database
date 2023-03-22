@@ -41,7 +41,7 @@ module DataAccess =
         Treatment: string
     }
 
-    let mapRow (info: PatientForm) =
+    let mapRow (id: Guid option) (info: PatientForm) =
         let res, date = DateTime.TryParse(info.Date)
         let resDate =
             match res with
@@ -53,7 +53,10 @@ module DataAccess =
             with
                 | _ -> 0
         {
-            Id = Guid.NewGuid()
+            Id =
+                match id with
+                | Some x -> x
+                | None -> Guid.NewGuid()
             Place = info.Place
             Date = resDate
             Name = info.Name
@@ -101,12 +104,21 @@ module DataAccess =
     let patientInfoTable = table'<PatientInfoRow> "patient_info" |> inSchema "dbo"
 
     let createPatientInfo (conn: IDbConnection) (info: PatientForm) =
-        let infoRow = mapRow info
+        let infoRow = mapRow None info
         insert {
             into patientInfoTable
             value infoRow
         }
         |> conn.InsertAsync
+
+    let editPatientInfo (conn: IDbConnection) (info: PatientForm) (patient: PatientListItem) =
+        let infoRow = mapRow (Some patient.Id) info
+        update {
+            for p in patientInfoTable do
+            set infoRow
+            where (p.Id = patient.Id)
+        }
+        |> conn.UpdateAsync
 
     let showPatientInfo (conn: IDbConnection) (phrase: string) (field: string) =
         let search = "%" + phrase + "%"
@@ -207,7 +219,7 @@ module DataAccess =
         csv.Configuration.PrepareHeaderForMatch <- ( fun header _ -> CultureInfo.CurrentCulture.TextInfo.ToTitleCase( header )) // only works in CsvHelper 17.0.0 and older it seems
         let patientFormData = List.ofSeq (csv.GetRecords<PatientForm>())
         let infoTable =
-            patientFormData |> List.map mapRow
+            patientFormData |> List.map (mapRow None)
         insert {
             into patientInfoTable
             values infoTable
@@ -232,6 +244,13 @@ module HttpHandlers =
         task {
             let conn = ctx.GetService<SqlConnection>()
             let! _ = DataAccess.createPatientInfo conn form
+            return()
+        }
+
+    let editPatientInfo (ctx: HttpContext) (form: PatientForm, patient: PatientListItem) =
+        task {
+            let conn = ctx.GetService<SqlConnection>()
+            let! _ = DataAccess.editPatientInfo conn form patient
             return()
         }
 

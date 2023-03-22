@@ -57,6 +57,14 @@ let PatientRow patient =
             Html.td patient.Treatment
             Html.td (patient.Date.ToLongDateString())
             Html.td patient.Place
+            Html.td [
+                Daisy.button.button [
+                    button.sm
+                    button.outline
+                    button.primary
+                    prop.text "Edit"
+                ]
+            ]
         ]
     ]
 
@@ -164,6 +172,7 @@ let IndexView () =
                 ]
 
                 Daisy.table [
+                    // table.compact
                     prop.className "max-w-xs m-2 shadow-xl"
                     prop.children [
                         Html.thead [
@@ -177,6 +186,7 @@ let IndexView () =
                                 Html.th "Treatment"
                                 Html.th "Date"
                                 Html.th "Place"
+                                Html.th ""
                             ]
                         ]
                         Html.tbody rows

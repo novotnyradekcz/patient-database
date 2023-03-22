@@ -28,7 +28,6 @@ let AppView () =
             prop.children [
                 Daisy.menu [
                     menu.horizontal
-
                     prop.className "items-stretch shadow-lg bg-base-100 rounded-box m-2"
                     prop.children [
                         Html.li [Html.a ("Data Entry", Page.Index)]
