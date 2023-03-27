@@ -7,7 +7,7 @@ open Feliz
 open Feliz.DaisyUI
 open Elmish
 open Feliz.UseElmish
-open PatientDatabase.Client.Pages.Index
+open PatientDatabase.Client.Router
 open PatientDatabase.Client.Server
 open PatientDatabase.Shared.API
 open Fable.Remoting.Client
@@ -22,6 +22,7 @@ type private Msg =
     | ListShown of PatientListItem list
     | ExportList
     | ListDownloaded of unit
+    | GoToEdit of Guid
 
 let private init () =
     { Patients = List.empty
@@ -43,34 +44,46 @@ let private update (msg: Msg) (model: State) : State * Cmd<Msg> =
     | ListShown items -> { model with Patients = items }, Cmd.none
     | ExportList -> model, Cmd.OfAsync.perform download (model.FileName, model.SearchPhrase, model.SearchField) ListDownloaded
     | ListDownloaded _ -> model, Cmd.none
+    | GoToEdit id -> model, Cmd.navigatePage (Page.EditPatient id)
 
-let PatientRow patient =
-    Html.tr [
-        table.hover
-        prop.children [
-            Html.td patient.Name
-            Html.td patient.Age
-            Html.td patient.Sex
-            Html.td $"{patient.Symptom1} {patient.Symptom2} {patient.Symptom3}"
-            Html.td patient.Tests
-            Html.td $"{patient.Diagnosis1} {patient.Diagnosis2} {patient.Diagnosis3}"
-            Html.td patient.Treatment
-            Html.td (patient.Date.ToLongDateString())
-            Html.td patient.Place
-            Html.td [
-                Daisy.button.button [
-                    button.sm
-                    button.outline
-                    button.primary
-                    prop.text "Edit"
-                ]
-            ]
-        ]
-    ]
+
 
 [<ReactComponent>]
 let IndexView () =
     let state, dispatch = React.useElmish (init, update, [||])
+
+    let PatientRow patient =
+        Html.tr [
+            table.hover
+            prop.children [
+                Html.td patient.Name
+                Html.td patient.Age
+                Html.td patient.Sex
+                Html.td $"{patient.Symptom1} {patient.Symptom2} {patient.Symptom3}"
+                Html.td patient.Tests
+                Html.td $"{patient.Diagnosis1} {patient.Diagnosis2} {patient.Diagnosis3}"
+                Html.td patient.Treatment
+                Html.td (patient.Date.ToLongDateString())
+                Html.td patient.Place
+                Html.td [
+                    Html.form [
+                        prop.onSubmit (fun e ->
+                            e.preventDefault ()
+                            GoToEdit patient.Id |> dispatch)
+                        prop.children [
+                            Daisy.button.button [
+                                button.sm
+                                button.outline
+                                button.primary
+                                prop.text "Edit"
+                                prop.type'.submit
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+        ]
+
     let rows = state.Patients |> List.map PatientRow
 
     Html.div [

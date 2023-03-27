@@ -8,65 +8,54 @@ open PatientDatabase.Client.Server
 open PatientDatabase.Shared.API
 open System
 
-type private State = { Message: string; Form: PatientForm; Patient: PatientListItem; }
+type private State = { Message: string; Form: PatientForm; PatientId: Guid; }
 
 type private Msg =
+    | FetchForm of Guid
+    | ShowForm of PatientForm
     | FormChanged of PatientForm
     | FormEdited
     | FormSaved of unit
 
-let private init () =
+let private init patientId =
     {
         Message = "Click on one of the buttons!"
-        Patient = {
-            Id = Guid.NewGuid()
-            Place = "Nebbi"
-            Date = DateTime.Today
-            Name = "John Doe"
-            Age = 9
-            Sex = "Male"
+        PatientId = patientId
+        Form = {
+            Place = ""
+            Date = DateTime.Today.ToShortDateString()
+            Name = ""
+            Age = "0"
+            Sex = "Unknown"
             Symptom1 = ""
             Symptom2 = ""
             Symptom3 = ""
             Tests = ""
+            Test1 = ""
+            Test2 = ""
+            Test3 = ""
+            Result1 = ""
+            Result2 = ""
+            Result3 = ""
             Diagnosis1 = ""
             Diagnosis2 = ""
             Diagnosis3 = ""
             Treatment = ""
         }
-        Form = {
-            Place = "Nebbi"
-            Date = DateTime.Today.ToShortDateString()
-            Name = "John Doe"
-            Age = "13"
-            Sex = "Unknown"
-            Symptom1 = ""
-            Symptom2 = ""
-            Symptom3 = ""
-            Tests = "HIV"
-            Test1 = ""
-            Test2 = ""
-            Test3 = ""
-            Result1 = "negative"
-            Result2 = "negative"
-            Result3 = "negative"
-            Diagnosis1 = ""
-            Diagnosis2 = ""
-            Diagnosis3 = ""
-            Treatment = "ibuprofen"
-        }
     },
-    Cmd.none
+    Cmd.OfAsync.perform service.FetchForm patientId ShowForm
 
 let private update (msg: Msg) (model: State) : State * Cmd<Msg> =
     match msg with
+    | FetchForm id -> model, Cmd.OfAsync.perform service.FetchForm id ShowForm
+    | ShowForm data -> { model with Form = data }, Cmd.none
     | FormChanged patientForm -> { model with Form = patientForm }, Cmd.none
-    | FormEdited -> model, Cmd.OfAsync.perform service.EditForm (model.Form, model.Patient) FormSaved
+    | FormEdited -> model, Cmd.OfAsync.perform service.EditForm (model.Form, model.PatientId) FormSaved
     | FormSaved _ -> model, Cmd.none
 
 [<ReactComponent>]
-let IndexView () =
-    let state, dispatch = React.useElmish (init, update, [||])
+let IndexView patientId =
+    let state, dispatch = React.useElmish (init patientId, update, [||])
 
 
     Html.div [

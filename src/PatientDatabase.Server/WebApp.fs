@@ -20,6 +20,7 @@ let service ctx =
             }
             |> Async.AwaitTask
       SaveForm = HttpHandlers.createPatientInfo ctx >> Async.AwaitTask
+      FetchForm = HttpHandlers.fetchPatientForm ctx >> Async.AwaitTask
       EditForm = HttpHandlers.editPatientInfo ctx >> Async.AwaitTask
       ShowList = HttpHandlers.showPatientInfo ctx >> Async.AwaitTask
       UploadData = HttpHandlers.uploadPatientInfo ctx >> Async.AwaitTask

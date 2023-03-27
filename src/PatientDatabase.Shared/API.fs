@@ -45,7 +45,8 @@ type PatientListItem = {
 type Service =
     { GetMessage: bool -> Async<string>
       SaveForm: PatientForm -> Async<unit>
-      EditForm: PatientForm * PatientListItem -> Async<unit>
+      EditForm: PatientForm * Guid -> Async<unit>
+      FetchForm: Guid -> Async<PatientForm>
       ShowList: string * string -> Async<PatientListItem list>
       UploadData: byte[] -> Async<int>
       DownloadData: string * string -> Async<byte[]> }

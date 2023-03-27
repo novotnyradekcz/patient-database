@@ -44,7 +44,7 @@ let AppView () =
         | Page.Index -> Pages.Index.IndexView()
         | Page.DataUpload -> Pages.DataUpload.IndexView()
         | Page.PatientList -> Pages.PatientList.IndexView()
-        | Page.EditPatient -> Pages.EditPatient.IndexView()
+        | Page.EditPatient patientId -> Pages.EditPatient.IndexView patientId
         | Page.About -> Html.text "Based on SAFEr Template by Dzoukr"
 
     React.router

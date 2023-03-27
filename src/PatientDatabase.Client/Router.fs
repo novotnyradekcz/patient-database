@@ -1,5 +1,6 @@
 ﻿module PatientDatabase.Client.Router
 
+open System
 open Browser.Types
 open Feliz.Router
 open Fable.Core.JsInterop
@@ -8,7 +9,7 @@ type Page =
     | Index
     | About
     | PatientList
-    | EditPatient
+    | EditPatient of Guid
     | DataUpload
 
 [<RequireQualifiedAccess>]
@@ -19,19 +20,20 @@ module Page =
         function
         | [ "about" ] -> Page.About
         | [ "patientlist" ] -> Page.PatientList
-        | [ "editpatient" ] -> Page.EditPatient
+        | [ "editpatient"; Route.Query ["guid", Route.Guid patientId] ] -> Page.EditPatient patientId
         | [ "dataupload" ] -> Page.DataUpload
         | [] -> Page.Index
         | _ -> defaultPage
 
     let noQueryString segments : string list * (string * string) list = segments, []
+    let yesQueryString patientId segments : string list * (string * string) list = segments, ["guid", string patientId]
 
     let toUrlSegments =
         function
         | Page.Index -> [] |> noQueryString
         | Page.About -> [ "about" ] |> noQueryString
         | Page.PatientList -> [ "patientlist" ] |> noQueryString
-        | Page.EditPatient -> [ "editpatient" ] |> noQueryString
+        | Page.EditPatient patientId -> [ "editpatient" ] |> yesQueryString patientId
         | Page.DataUpload -> [ "dataupload" ] |> noQueryString
 
 [<RequireQualifiedAccess>]

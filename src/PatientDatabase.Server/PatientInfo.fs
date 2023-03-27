@@ -101,6 +101,29 @@ module DataAccess =
             Treatment = data.Treatment
         }
 
+    let formMap (data: PatientInfoRow) =
+        {
+            Place = data.Place
+            Date = data.Date.ToShortDateString()
+            Name = data.Name
+            Age = string data.Age
+            Sex = data.Sex
+            Symptom1 = data.Symptom1
+            Symptom2 = data.Symptom2
+            Symptom3 = data.Symptom3
+            Tests = data.Tests
+            Test1 = data.Test1
+            Test2 = data.Test2
+            Test3 = data.Test3
+            Result1 = data.Result1
+            Result2 = data.Result2
+            Result3 = data.Result3
+            Diagnosis1 = data.Diagnosis1
+            Diagnosis2 = data.Diagnosis2
+            Diagnosis3 = data.Diagnosis3
+            Treatment = data.Treatment
+        }
+
     let patientInfoTable = table'<PatientInfoRow> "patient_info" |> inSchema "dbo"
 
     let createPatientInfo (conn: IDbConnection) (info: PatientForm) =
@@ -111,12 +134,20 @@ module DataAccess =
         }
         |> conn.InsertAsync
 
-    let editPatientInfo (conn: IDbConnection) (info: PatientForm) (patient: PatientListItem) =
-        let infoRow = mapRow (Some patient.Id) info
+    let fetchPatientForm (conn: IDbConnection) (patientId: Guid) =
+        select {
+            for p in patientInfoTable do
+            where (p.Id = patientId)
+        }
+        |> conn.SelectAsync<PatientInfoRow>
+        |> Task.map (fun items -> items |> Seq.exactlyOne |> formMap)
+
+    let editPatientInfo (conn: IDbConnection) (info: PatientForm) (patientId: Guid) =
+        let infoRow = mapRow (Some patientId) info
         update {
             for p in patientInfoTable do
             set infoRow
-            where (p.Id = patient.Id)
+            where (p.Id = patientId)
         }
         |> conn.UpdateAsync
 
@@ -247,10 +278,17 @@ module HttpHandlers =
             return()
         }
 
-    let editPatientInfo (ctx: HttpContext) (form: PatientForm, patient: PatientListItem) =
+    let fetchPatientForm (ctx: HttpContext) (id: Guid) =
         task {
             let conn = ctx.GetService<SqlConnection>()
-            let! _ = DataAccess.editPatientInfo conn form patient
+            let! form = DataAccess.fetchPatientForm conn id
+            return form
+        }
+
+    let editPatientInfo (ctx: HttpContext) (form: PatientForm, id: Guid) =
+        task {
+            let conn = ctx.GetService<SqlConnection>()
+            let! _ = DataAccess.editPatientInfo conn form id
             return()
         }
 
