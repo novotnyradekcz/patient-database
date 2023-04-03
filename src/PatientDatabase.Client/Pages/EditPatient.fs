@@ -19,7 +19,7 @@ type private Msg =
 
 let private init patientId =
     {
-        Message = "Click on one of the buttons!"
+        Message = "Ready to edit"
         PatientId = patientId
         Form = {
             Place = ""
@@ -51,7 +51,7 @@ let private update (msg: Msg) (model: State) : State * Cmd<Msg> =
     | ShowForm data -> { model with Form = data }, Cmd.none
     | FormChanged patientForm -> { model with Form = patientForm }, Cmd.none
     | FormEdited -> model, Cmd.OfAsync.perform service.EditForm (model.Form, model.PatientId) FormSaved
-    | FormSaved _ -> model, Cmd.none
+    | FormSaved _ -> { model with Message = "Patient entry successfully edited" }, Cmd.none
 
 [<ReactComponent>]
 let IndexView patientId =
@@ -346,10 +346,18 @@ let IndexView patientId =
                                 ]
                             ]
                         ]
+                        match state.Message with
+                            | "Patient entry successfully edited" ->
+                                Daisy.alert [
+                                    prop.className "m-2 w-auto"
+                                    alert.success
+                                    prop.text state.Message
+                                ]
+                            | _ -> Html.div []
                         Daisy.button.button [
                             prop.className "btn-wide shadow-2xl m-2"
                             button.outline
-                            prop.text "Save Data"
+                            prop.text "Save Edited Data"
                             prop.type'.submit
                         ]
                     ]
