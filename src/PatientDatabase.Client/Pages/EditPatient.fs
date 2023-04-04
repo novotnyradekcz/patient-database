@@ -74,6 +74,33 @@ let IndexView patientId =
                             ]
                         ]
                         Html.div [
+                            Daisy.button.label [
+                                prop.htmlFor "delete"
+                                button.primary
+                                prop.text "Delete patient entry"
+                            ]
+                            Daisy.modalToggle [prop.id "delete"]
+                            Daisy.modal [
+                                prop.children [
+                                    Daisy.modalBox [
+                                        Html.p $"Are you sure you want to delete patient {state.Form.Name}, {state.Form.Age}?"
+                                        Daisy.modalAction [
+                                            Daisy.button.label [
+                                                prop.onClick ()
+                                                button.warning
+                                                prop.text "Yes"
+                                            ]
+                                            Daisy.button.label [
+                                                prop.htmlFor "delete"
+                                                button.info
+                                                prop.text "No"
+                                            ]
+                                        ]
+                                    ]
+                                ]
+                            ]
+                        ]
+                        Html.div [
                             prop.className "text-l"
                             prop.children [
                                 Daisy.label [ prop.text "Outreach information" ]
