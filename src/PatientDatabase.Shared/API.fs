@@ -49,6 +49,7 @@ type Service =
       FetchForm: Guid -> Async<PatientForm>
       ShowList: string * string -> Async<PatientListItem list>
       UploadData: byte[] -> Async<int>
-      DownloadData: string * string -> Async<byte[]> }
+      DownloadData: string * string -> Async<byte[]>
+      DeleteEntry: Guid -> Async<int> }
 
     static member RouteBuilder _ m = sprintf "/api/service/%s" m

@@ -16,6 +16,8 @@ type private Msg =
     | FormChanged of PatientForm
     | FormEdited
     | FormSaved of unit
+    | DeleteEntry
+    | EntryDeleted of int
 
 let private init patientId =
     {
@@ -52,6 +54,8 @@ let private update (msg: Msg) (model: State) : State * Cmd<Msg> =
     | FormChanged patientForm -> { model with Form = patientForm }, Cmd.none
     | FormEdited -> model, Cmd.OfAsync.perform service.EditForm (model.Form, model.PatientId) FormSaved
     | FormSaved _ -> { model with Message = "Patient entry successfully edited" }, Cmd.none
+    | DeleteEntry -> model, Cmd.OfAsync.perform service.DeleteEntry model.PatientId EntryDeleted
+    | EntryDeleted _ -> model, Cmd.none
 
 [<ReactComponent>]
 let IndexView patientId =
@@ -81,12 +85,15 @@ let IndexView patientId =
                             ]
                             Daisy.modalToggle [prop.id "delete"]
                             Daisy.modal [
+                                prop.className "m-2"
                                 prop.children [
                                     Daisy.modalBox [
                                         Html.p $"Are you sure you want to delete patient {state.Form.Name}, {state.Form.Age}?"
                                         Daisy.modalAction [
                                             Daisy.button.label [
-                                                prop.onClick ()
+                                                prop.onClick (fun e ->
+                                                    e.preventDefault ()
+                                                    DeleteEntry |> dispatch)
                                                 button.warning
                                                 prop.text "Yes"
                                             ]

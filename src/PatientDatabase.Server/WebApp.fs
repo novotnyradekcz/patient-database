@@ -25,6 +25,7 @@ let service ctx =
       ShowList = HttpHandlers.showPatientInfo ctx >> Async.AwaitTask
       UploadData = HttpHandlers.uploadPatientInfo ctx >> Async.AwaitTask
       DownloadData = HttpHandlers.downloadPatientInfo ctx >> Async.AwaitTask
+      DeleteEntry = HttpHandlers.deletePatientInfo ctx >> Async.AwaitTask
     }
 
 let webApp: HttpHandler =

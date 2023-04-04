@@ -269,6 +269,12 @@ module DataAccess =
             return System.Text.Encoding.ASCII.GetBytes(downloadedFile)
         }
 
+    let deletePatientInfo (conn: IDbConnection) (id: Guid) =
+        delete {
+            for p in patientInfoTable do
+            where (p.Id = id)
+        } |> conn.DeleteAsync
+
 
 module HttpHandlers =
     let createPatientInfo (ctx: HttpContext) (form: PatientForm) =
@@ -311,4 +317,11 @@ module HttpHandlers =
             let conn = ctx.GetService<SqlConnection>()
             let! data = DataAccess.downloadPatientInfo conn file phrase
             return data
+        }
+
+    let deletePatientInfo (ctx: HttpContext) (id: Guid) =
+        task {
+            let conn = ctx.GetService<SqlConnection>()
+            let! row = DataAccess.deletePatientInfo conn id
+            return row
         }
