@@ -131,6 +131,7 @@ let IndexView patientId =
                                             Daisy.label [ Daisy.labelText "Place" ]
                                             Daisy.input [
                                                 input.bordered
+                                                if state.Message = "Patient entry deleted" then prop.disabled true
                                                 prop.className "w-40"
                                                 prop.onChange (fun value ->
                                                     { state.Form with Place = value } |> FormChanged |> dispatch)
@@ -141,6 +142,7 @@ let IndexView patientId =
                                             Daisy.label [ Daisy.labelText "Date" ]
                                             Daisy.input [
                                                 input.bordered
+                                                if state.Message = "Patient entry deleted" then prop.disabled true
                                                 prop.className "w-32"
                                                 prop.onChange (fun value ->
                                                     { state.Form with Date = value } |> FormChanged |> dispatch)
@@ -167,6 +169,7 @@ let IndexView patientId =
                                             Daisy.label [ Daisy.labelText "Patient Name" ]
                                             Daisy.input [
                                                 input.bordered
+                                                if state.Message = "Patient entry deleted" then prop.disabled true
                                                 prop.className "w-56"
                                                 prop.onChange (fun value ->
                                                     { state.Form with Name = value } |> FormChanged |> dispatch)
@@ -177,6 +180,7 @@ let IndexView patientId =
                                             Daisy.label [ Daisy.labelText "Patient Age" ]
                                             Daisy.input [
                                                 input.bordered
+                                                if state.Message = "Patient entry deleted" then prop.disabled true
                                                 prop.className "w-24"
                                                 prop.onChange (fun value ->
                                                     { state.Form with Age = value } |> FormChanged |> dispatch)
@@ -187,6 +191,7 @@ let IndexView patientId =
                                             Daisy.label [ Daisy.labelText "Patient Sex" ]
                                             Daisy.select [
                                                 select.bordered
+                                                if state.Message = "Patient entry deleted" then prop.disabled true
                                                 prop.onChange (fun value ->
                                                     { state.Form with Sex = value } |> FormChanged |> dispatch)
                                                 prop.value state.Form.Sex
@@ -216,6 +221,7 @@ let IndexView patientId =
                                                 prop.children [
                                                     Daisy.select [
                                                         select.bordered
+                                                        if state.Message = "Patient entry deleted" then prop.disabled true
                                                         prop.onChange (fun value ->
                                                             { state.Form with Symptom1 = value } |> FormChanged |> dispatch)
                                                         prop.value state.Form.Symptom1
@@ -229,6 +235,7 @@ let IndexView patientId =
                                                     ]
                                                     Daisy.input [
                                                         input.bordered
+                                                        if state.Message = "Patient entry deleted" then prop.disabled true
                                                         prop.className "w-1/2"
                                                         prop.onChange (fun value ->
                                                             { state.Form with Symptom1 = value } |> FormChanged |> dispatch)
@@ -241,6 +248,7 @@ let IndexView patientId =
                                                 prop.children [
                                                     Daisy.select [
                                                         select.bordered
+                                                        if state.Message = "Patient entry deleted" then prop.disabled true
                                                         prop.onChange (fun value ->
                                                             { state.Form with Symptom2 = value } |> FormChanged |> dispatch)
                                                         prop.value state.Form.Symptom2
@@ -254,6 +262,7 @@ let IndexView patientId =
                                                     ]
                                                     Daisy.input [
                                                         input.bordered
+                                                        if state.Message = "Patient entry deleted" then prop.disabled true
                                                         prop.className "w-1/2"
                                                         prop.onChange (fun value ->
                                                             { state.Form with Symptom2 = value } |> FormChanged |> dispatch)
@@ -266,6 +275,7 @@ let IndexView patientId =
                                                 prop.children [
                                                     Daisy.select [
                                                         select.bordered
+                                                        if state.Message = "Patient entry deleted" then prop.disabled true
                                                         prop.onChange (fun value ->
                                                             { state.Form with Symptom3 = value } |> FormChanged |> dispatch)
                                                         prop.value state.Form.Symptom3
@@ -279,6 +289,7 @@ let IndexView patientId =
                                                     ]
                                                     Daisy.input [
                                                         input.bordered
+                                                        if state.Message = "Patient entry deleted" then prop.disabled true
                                                         prop.className "w-1/2"
                                                         prop.onChange (fun value ->
                                                             { state.Form with Symptom3 = value } |> FormChanged |> dispatch)
@@ -289,6 +300,7 @@ let IndexView patientId =
                                             Daisy.label [ Daisy.labelText "Tests" ]
                                             Daisy.input [
                                                 input.bordered
+                                                if state.Message = "Patient entry deleted" then prop.disabled true
                                                 prop.className "w-full"
                                                 prop.onChange (fun value ->
                                                     { state.Form with Tests = value } |> FormChanged |> dispatch)
@@ -302,6 +314,7 @@ let IndexView patientId =
                                                 prop.children [
                                                     Daisy.select [
                                                         select.bordered
+                                                        if state.Message = "Patient entry deleted" then prop.disabled true
                                                         prop.onChange (fun value ->
                                                             { state.Form with Diagnosis1 = value } |> FormChanged |> dispatch)
                                                         prop.value state.Form.Diagnosis1
@@ -316,6 +329,7 @@ let IndexView patientId =
                                                     ]
                                                     Daisy.input [
                                                         input.bordered
+                                                        if state.Message = "Patient entry deleted" then prop.disabled true
                                                         prop.className "w-1/2"
                                                         prop.onChange (fun value ->
                                                             { state.Form with Diagnosis1 = value } |> FormChanged |> dispatch)
@@ -328,6 +342,7 @@ let IndexView patientId =
                                                 prop.children [
                                                     Daisy.select [
                                                         select.bordered
+                                                        if state.Message = "Patient entry deleted" then prop.disabled true
                                                         prop.onChange (fun value ->
                                                             { state.Form with Diagnosis2 = value } |> FormChanged |> dispatch)
                                                         prop.value state.Form.Diagnosis2
@@ -342,6 +357,7 @@ let IndexView patientId =
                                                     ]
                                                     Daisy.input [
                                                         input.bordered
+                                                        if state.Message = "Patient entry deleted" then prop.disabled true
                                                         prop.className "w-1/2"
                                                         prop.onChange (fun value ->
                                                             { state.Form with Diagnosis2 = value } |> FormChanged |> dispatch)
@@ -354,6 +370,7 @@ let IndexView patientId =
                                                 prop.children [
                                                     Daisy.select [
                                                         select.bordered
+                                                        if state.Message = "Patient entry deleted" then prop.disabled true
                                                         prop.onChange (fun value ->
                                                             { state.Form with Diagnosis3 = value } |> FormChanged |> dispatch)
                                                         prop.value state.Form.Diagnosis3
@@ -368,6 +385,7 @@ let IndexView patientId =
                                                     ]
                                                     Daisy.input [
                                                         input.bordered
+                                                        if state.Message = "Patient entry deleted" then prop.disabled true
                                                         prop.className "w-1/2"
                                                         prop.onChange (fun value ->
                                                             { state.Form with Diagnosis3 = value } |> FormChanged |> dispatch)
@@ -378,6 +396,7 @@ let IndexView patientId =
                                             Daisy.label [ Daisy.labelText "Treatment" ]
                                             Daisy.input [
                                                 input.bordered
+                                                if state.Message = "Patient entry deleted" then prop.disabled true
                                                 prop.className "w-full"
                                                 prop.onChange (fun value ->
                                                     { state.Form with Treatment = value } |> FormChanged |> dispatch)
