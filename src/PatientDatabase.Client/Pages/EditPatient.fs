@@ -398,7 +398,9 @@ let IndexView patientId =
                             | _ -> Html.div []
                         Daisy.button.button [
                             prop.className "btn-wide shadow-2xl m-2"
-                            button.outline
+                            match state.Message with
+                            | "Patient entry deleted" -> button.disabled
+                            | _ -> button.outline
                             prop.text "Save Edited Data"
                             prop.type'.submit
                         ]
