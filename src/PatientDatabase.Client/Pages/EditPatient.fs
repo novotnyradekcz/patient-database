@@ -55,7 +55,7 @@ let private update (msg: Msg) (model: State) : State * Cmd<Msg> =
     | FormEdited -> model, Cmd.OfAsync.perform service.EditForm (model.Form, model.PatientId) FormSaved
     | FormSaved _ -> { model with Message = "Patient entry successfully edited" }, Cmd.none
     | DeleteEntry -> model, Cmd.OfAsync.perform service.DeleteEntry model.PatientId EntryDeleted
-    | EntryDeleted _ -> model, Cmd.none
+    | EntryDeleted _ -> { model with Message = "Patient entry deleted" }, Cmd.none
 
 [<ReactComponent>]
 let IndexView patientId =
@@ -78,34 +78,42 @@ let IndexView patientId =
                             ]
                         ]
                         Html.div [
-                            Daisy.button.label [
-                                prop.htmlFor "delete"
-                                button.primary
-                                prop.text "Delete patient entry"
-                            ]
-                            Daisy.modalToggle [prop.id "delete"]
-                            Daisy.modal [
-                                prop.className "m-2"
-                                prop.children [
-                                    Daisy.modalBox [
-                                        Html.p $"Are you sure you want to delete patient {state.Form.Name}, {state.Form.Age}?"
-                                        Daisy.modalAction [
-                                            Daisy.button.label [
-                                                prop.onClick (fun e ->
-                                                    e.preventDefault ()
-                                                    DeleteEntry |> dispatch)
-                                                button.warning
-                                                prop.text "Yes"
-                                            ]
-                                            Daisy.button.label [
-                                                prop.htmlFor "delete"
-                                                button.info
-                                                prop.text "No"
+                            match state.Message with
+                                | "Patient entry deleted" ->
+                                    Daisy.alert [
+                                        prop.className "m-2 w-auto"
+                                        alert.success
+                                        prop.text state.Message
+                                    ]
+                                | _ ->
+                                    Daisy.button.label [
+                                        prop.htmlFor "delete"
+                                        button.primary
+                                        prop.text "Delete patient entry"
+                                    ]
+                                    Daisy.modalToggle [prop.id "delete"]
+                                    Daisy.modal [
+                                        prop.className "m-2"
+                                        prop.children [
+                                            Daisy.modalBox [
+                                                Html.p $"Are you sure you want to delete patient {state.Form.Name}, {state.Form.Age}?"
+                                                Daisy.modalAction [
+                                                    Daisy.button.label [
+                                                        prop.onClick (fun e ->
+                                                            e.preventDefault ()
+                                                            DeleteEntry |> dispatch)
+                                                        button.warning
+                                                        prop.text "Yes"
+                                                    ]
+                                                    Daisy.button.label [
+                                                        prop.htmlFor "delete"
+                                                        button.info
+                                                        prop.text "No"
+                                                    ]
+                                                ]
                                             ]
                                         ]
                                     ]
-                                ]
-                            ]
                         ]
                         Html.div [
                             prop.className "text-l"
