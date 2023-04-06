@@ -61,7 +61,7 @@ let private update (msg: Msg) (model: State) : State * Cmd<Msg> =
         Cmd.none
     | FormChanged patientForm -> { model with Form = patientForm }, Cmd.none
     | FormSubmitted -> model, Cmd.OfAsync.perform service.SaveForm model.Form FormSaved
-    | FormSaved _ -> model, Cmd.none
+    | FormSaved _ -> { model with Message = "Patient entry created and saved" }, Cmd.none
 
 [<ReactComponent>]
 let IndexView () =
@@ -321,6 +321,14 @@ let IndexView () =
                                 ]
                             ]
                         ]
+                        match state.Message with
+                            | "Patient entry created and saved" ->
+                                Daisy.alert [
+                                    prop.className "m-2 w-auto"
+                                    alert.success
+                                    prop.text state.Message
+                                ]
+                            | _ -> Html.div []
                         Daisy.button.button [
                             prop.className "btn-wide shadow-2xl m-2"
                             button.outline
